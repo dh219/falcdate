@@ -606,6 +606,10 @@ void print_info() {
 	printf("  Use your internet connection to\n   work around dead NVRAM battery.\n\n" );
 }
 
+void reset_nvram( struct NVM *buffer ) {
+	NVMaccess( 2, 0, sizeof( buffer ), buffer );
+}
+
 void get_nvram( struct NVM *buffer ) {
 	NVMaccess( 0, 0, sizeof(*buffer), buffer );
 }
@@ -624,8 +628,9 @@ int main( int argc, char **argv )
 	print_info();
 
 	if (initialise()) {
+		reset_nvram( &nvm );
 		get_nvram( &nvm );
-/*		print_nvram( &nvm ); */
+/*		print_nvram( &nvm );*/
 		read_cfg( &nvm );
 		print_nvram( &nvm );
 		set_nvram( &nvm );
