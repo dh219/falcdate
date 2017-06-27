@@ -6,7 +6,7 @@
  *
  */
 
-#define VERSION "1.0"
+#define VERSION "1.02"
 #define YEAR "2017"
 
 #include <stdio.h>
