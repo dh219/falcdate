@@ -6,7 +6,7 @@
  *
  */
 
-#define VERSION "1.0"
+#define VERSION "1.02"
 #define YEAR "2017"
 
 #include <stdio.h>
@@ -19,6 +19,21 @@
 #define UNIX_EPOCH 2208988800UL
 
 /*#define DEBUG*/
+
+unsigned long hash( void *data, size_t length ) {
+	unsigned long hash = 5381L;
+	char c;
+	char *d = (char*) data;
+	size_t count = 0;
+
+	for( count = 0 ; count < length ; count++ ) {
+		c = d[count];
+		hash = ( ( hash << 5 ) + hash ) + c;
+	}
+	return hash;
+}
+
+
 
 #ifdef __PUREC__  /* pure_c: stik */
 	
@@ -39,6 +54,20 @@
 	
 	char *iline;
 	int16 li = 0;
+	
+	long get_os_start() {
+		SYSHDR *sysbase;
+
+		sysbase = *( (SYSHDR**)(0x4f2L) );
+		return sysbase->os_start;
+	}
+
+	void reboot() {
+		long os_start;
+
+		os_start = Supexec( get_os_start );
+		Supexec( os_start );
+	}
 
 #elif defined ( __GNUC__ ) /* gcc: mintnet */
 
@@ -622,18 +651,42 @@ int main( int argc, char **argv )
 {
 	int n;
 	int rc;
+	unsigned long oldhash, newhash;
+	time_t start;
 
 	struct NVM nvm;
 
 	print_info();
 
 	if (initialise()) {
+		get_nvram( &nvm );
+		oldhash = hash( &nvm, sizeof( nvm ) );
+
 		reset_nvram( &nvm );
 		get_nvram( &nvm );
 /*		print_nvram( &nvm );*/
+
 		read_cfg( &nvm );
+		newhash = hash( &nvm, sizeof( nvm ) );
 		print_nvram( &nvm );
+
 		set_nvram( &nvm );
+
+		if( oldhash != newhash ) {
+			printf("[%lu:%lu]\nCHANGES WERE APPLIED\nWILL REBOOT IN 5 SECONDS\nHIT ANY KEY TO ABORT\n\n", oldhash, newhash );
+			fflush(stdout);
+
+			start = time(NULL);
+			while( time(NULL) <= start+5 ) {
+				rc = Cconis();
+				if( rc )
+					exit(255);
+			}
+
+			reboot();
+			exit(255);
+		}
+
 	
 		for( n = 1 ; n <= DH_RETRY ; n++ ) {
 			rc = dh_gettime();
@@ -648,13 +701,12 @@ int main( int argc, char **argv )
 			sleep(2);
 		}
 		if( n > DH_RETRY ) {
-			sleep(3);
+			sleep(2);
 			return 2;
 		}
 	}
 
-/*	pause(); */
 	printf("\n");
-	sleep(2);
+	sleep(4);
 	return 0;
 }
