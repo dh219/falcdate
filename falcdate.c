@@ -77,7 +77,22 @@ unsigned long hash( void *data, size_t length ) {
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
 	#include <mint/mintbind.h>
+	#include <mint/sysvars.h>
 	#include <stdint.h>
+
+	long get_os_start() {
+		OSHEADER *sysbase;
+
+		sysbase = *( (OSHEADER**)(0x4f2L) );
+		return (long)sysbase->reseth;
+	}
+
+	void reboot() {
+		long os_start;
+
+		os_start = Supexec( get_os_start );
+		Supexec( os_start );
+	}
 
 #else
 #error "Compilation only supported with PURE C & STIK or GCC and MiNT"
