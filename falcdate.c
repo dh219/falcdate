@@ -6,8 +6,8 @@
  *
  */
 
-#define VERSION "1.02"
-#define YEAR "2017"
+#define VERSION "1.04"
+#define YEAR "2020"
 
 #include <stdio.h>
 #include <stdlib.h>
