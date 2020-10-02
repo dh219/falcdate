@@ -1,7 +1,7 @@
 # FALCDATE
 Use the near always-on internet connection of your modern Atari Falcon setup to work around the flat battery in your NVRAM/Real Time Clock chip.
 
-# FALCDATE (c) 2017 D Henderson.
+# FALCDATE (c) 2017-2020 D Henderson.
 
 FALCDATE is designed to run from your AUTO folder after internet connectivity is established (eg. after MiNT/Gluestik etc.)
 
