@@ -89,6 +89,8 @@ unsigned long hash( void *data, size_t length ) {
 
 	void reboot() {
 		long os_start;
+	
+		Shutdown(1L);
 
 		os_start = Supexec( get_os_start );
 		Supexec( os_start );
@@ -708,7 +710,7 @@ int main( int argc, char **argv )
 			if( rc == 0 )
 				break;
 			else if( rc == DH_E_RESOLV ) {
-				sleep(3);
+/*				sleep(3);*/
 				return 1;
 			}
 			else if( rc > 0 )
@@ -722,6 +724,6 @@ int main( int argc, char **argv )
 	}
 
 	printf("\n");
-	sleep(4);
+/*	sleep(4); */
 	return 0;
 }
